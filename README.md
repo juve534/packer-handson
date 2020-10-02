@@ -89,3 +89,76 @@ packer build packer.json
 
 ビルドが完了しましたら、AWSコンソール上から、AMIを使ってEC2を立ち上げてみましょう。  
 立ち上がって、80でアクセスして、Apacheのページが出たら完了です。
+
+### Ansible
+
+Packerは構成管理ツールのAnsibleを使うこともできます。
+先程記載したものをAnsible化してみます。
+
+まずはApacheをインストールするplaybookを用意します。  
+playbooksディレクトリを作成し、webserver.yamlを作ってください。  
+webserver.yamlには下記の内容を記載します。  
+
+```yaml
+- name: Configure webservers
+  hosts: all
+  become: true
+  tasks:
+      - name: Install apache
+        yum:
+          name: httpd
+          state: latest
+
+      - name: enabled apache
+        systemd:
+          name: httpd
+          state: started
+          enabled: yes
+```
+
+これでAnsibleの準備は完了です。  
+では次にPackerの設定を用意しましょう。ansible.jsonを作成し、下記の内容を記載してください。
+
+```json
+{
+    "builders": [
+      {
+        "type": "amazon-ebs",
+        "region": "ap-northeast-1",
+        "source_ami": "ami-0f9ae750e8274075b",
+        "instance_type": "t2.micro",
+        "ssh_username": "ec2-user",
+        "ami_name": "packer-lesson-ami_{{isotime \"2006_01_02_03_04\"}}"
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "shell",
+        "inline": [
+            "sudo yum clean all",
+            "sudo yum -y update",
+            "sudo amazon-linux-extras install epel",
+            "sudo yum -y install ansible"
+        ]
+      },
+      {
+        "type": "ansible-local",
+        "playbook_file": "./webserver.yaml"
+      }
+    ]
+}
+```
+
+ポイントは、インラインでシェルを実行するの際に、Ansibleをインストールしておくことです。これがないとAnsibleが実行できません。
+
+準備ができましたら、先程と同様に構文の確認をし、エラーが無いことを確認して実行します。
+
+```
+# 構文の確認
+packer validate ansible.json
+
+packer build ansible.json
+```
+
+ビルドが完了しましたら、AWSコンソール上から、AMIを使ってEC2を立ち上げてみましょう。  
+立ち上がって、80でアクセスして、Apacheのページが出たら完了です。
