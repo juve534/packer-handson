@@ -75,5 +75,17 @@ packer validate packer.json
 packer build packer.json
 ```
 
+ビルド中に設定をみていきます。  
+`builders` に記載されている項目と内容は下記になります。  
+
+| 項目名 | 設定値 | 内容 |
+| ---- | ---- | ---- |
+| type | amazon-ebs | ビルダーをEC2上に立ち上げる|
+| region | ap-northeast-1 | ビルダーを起動するregion。設定値は東京リージョン |
+| source_ami | ami-0f9ae750e8274075b | ビルダーを起動するEC2のAMI。設定値はAmazon Linux2 |
+| instance_type | t2.micro | ビルダーを起動するEC2のインスタンスサイズ |
+| ssh_username | ec2-user | SSH接続するユーザ名。ここではAmazon Linuxのユーザ名。 |
+| ami_name | packer-lesson-ami | 作成するAMIの名前 |
+
 ビルドが完了しましたら、AWSコンソール上から、AMIを使ってEC2を立ち上げてみましょう。  
 立ち上がって、80でアクセスして、Apacheのページが出たら完了です。
