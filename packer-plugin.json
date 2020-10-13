@@ -1,0 +1,36 @@
+{
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "ap-northeast-1",
+      "source_ami": "ami-0f9ae750e8274075b",
+      "instance_type": "t2.micro",
+      "ssh_username": "ec2-user",
+      "ami_name": "packer-lesson-ami_{{isotime \"2006_01_02_03_04\"}}",
+      "tags": {
+        "Amazon_AMI_Management_Identifier": "packer-lesson"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+          "sudo yum clean all",
+          "sudo yum -y update",
+          "sudo amazon-linux-extras install epel",
+          "sudo yum -y install ansible"
+      ]
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "./webserver.yaml"
+    }
+  ],
+  "post-processors":[{
+    "type": "amazon-ami-management",
+    "regions": ["ap-northeast-1"],
+    "identifier": "packer-lesson",
+    "keep_releases": "1"
+  }]
+}
