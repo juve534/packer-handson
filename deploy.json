@@ -1,0 +1,28 @@
+{
+    "builders": [
+      {
+        "type": "amazon-ebs",
+        "region": "ap-northeast-1",
+        "source_ami": "ami-0f9ae750e8274075b",
+        "instance_type": "t2.micro",
+        "ssh_username": "ec2-user",
+        "ami_name": "app-ami_{{isotime \"2006_01_02_03_04\"}}"
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "shell",
+        "inline": [
+            "sudo yum clean all",
+            "sudo yum -y update",
+            "sudo amazon-linux-extras install epel",
+            "sudo yum -y install ansible"
+        ]
+      },
+      {
+        "type": "ansible-local",
+        "playbook_file": "./playbooks/main.yaml",
+        "playbook_dir": "./playbooks"
+      }
+    ]
+  }
