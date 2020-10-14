@@ -1,0 +1,4 @@
+- name: deploy
+  copy:
+    src: "../files/hello.php"
+    dest: /var/www/html/hello.php

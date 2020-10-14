@@ -1,0 +1,10 @@
+---
+all:
+  vars:
+    stage: remote
+  children:
+    defaults:
+      hosts:
+        localhost:
+          ansible_connection: ssh
+          ansible_port: 22

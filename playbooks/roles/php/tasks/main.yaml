@@ -1,0 +1,18 @@
+- name: install php
+  yum: 
+    name: "{{ item }}"
+    state: present
+  loop:
+    - php
+    - php-devel
+    - php-mbstring
+    - php-pdo
+    - php-mcrypt
+    - php-opcache
+    - php-xml
+
+- name: install composer
+  shell: curl -sS https://getcomposer.org/installer | php
+
+- name: rename composer.phar to composer
+  shell: mv composer.phar /usr/local/bin/composer
