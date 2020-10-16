@@ -6,3 +6,6 @@ crash.log
 
 # For built boxes
 *.box
+
+# Packer plugin
+packer-post-processor-amazon-ami-management
